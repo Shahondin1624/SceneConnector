@@ -5,12 +5,17 @@ package util;
  */
 public class SceneWorkflowImpl implements SceneWorkflow {
 
+    private PositionList<SceneWrapper> workflow;
+
     public SceneWorkflowImpl(SceneWrapper... wrappers) {
-        for (SceneWrapper wrapper : wrappers) {
-            if (wrapper != null) {
-                addScene(wrapper);
-            }
+        workflow = new PositionList<>(wrappers[0]);
+        for (int i = 1; i < wrappers.length; i++) {
+            addScene(wrappers[i]);
         }
+    }
+
+    public SceneWorkflowImpl() {
+        workflow = new PositionList<>();
     }
 
     @Override
@@ -20,6 +25,6 @@ public class SceneWorkflowImpl implements SceneWorkflow {
 
     @Override
     public void addScene(SceneWrapper sceneWrapper) {
-        workflow.addLast(sceneWrapper);
+        workflow.add(sceneWrapper);
     }
 }

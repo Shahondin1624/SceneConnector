@@ -1,5 +1,6 @@
 package util;
 
+import controller.Controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
@@ -22,7 +23,7 @@ public class SceneWrapper {
     /***
      * the controller that is connected to the wrapped scene
      */
-    private Object controller;
+    private Controller controller;
 
     /***
      * Default constructor that creates necessary data from the provided absolute path of fxml file
@@ -44,7 +45,7 @@ public class SceneWrapper {
      * @param controller that is attached to scene
      * @param name that is displayed in Scene-ListView-Overview
      */
-    public SceneWrapper(Node node, Object controller, String name) {
+    public SceneWrapper(Node node, Controller controller, String name) {
         this.scene = node;
         this.controller = controller;
         this.name = name;
@@ -66,11 +67,11 @@ public class SceneWrapper {
         this.scene = scene;
     }
 
-    public Object getController() {
+    public Controller getController() {
         return controller;
     }
 
-    public void setController(Object controller) {
+    public void setController(Controller controller) {
         this.controller = controller;
     }
 

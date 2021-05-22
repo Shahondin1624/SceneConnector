@@ -1,11 +1,9 @@
 package controller;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import util.SceneWorkflow;
@@ -18,52 +16,47 @@ import util.SceneWrapper;
 public class SceneConnector {
 
     private AnchorPane anchorPane = new AnchorPane();
-    private SceneWrapper child;
-    private SceneWorkflow workflow = new SceneWorkflowImpl();
+    private SceneWrapper wrapped;
+    private SceneWorkflow workflow;
     private final double NON = Double.NEGATIVE_INFINITY;
     private final double PADDING = 10.0;
     private ListView<SceneWrapper> listView = new ListView<>();
 
     /***
      * pane which allows to select whether the side pane should allow jumps
-     * @param node initial node to display
      * @param jumpable
      * @param workflow own workflow to work on
      */
-    public SceneConnector(Node node, boolean jumpable, SceneWorkflow workflow) {
-        this(node, 800, 600, jumpable, workflow);
+    public SceneConnector(boolean jumpable, SceneWorkflow workflow) {
+        this(800, 600, jumpable, workflow);
     }
 
     /***
      * pane which allows to select whether the side pane should allow jumps
-     * @param node initial node to display
      * @param jumpable
      */
-    public SceneConnector(Node node, boolean jumpable) {
-        this(node, jumpable, new SceneWorkflowImpl());
+    public SceneConnector(boolean jumpable) {
+        this(jumpable, new SceneWorkflowImpl());
     }
 
     /***
      * pane with default configuration
-     * @param node initial node to display
      */
-    public SceneConnector(Node node) {
-        this(node, true);
+    public SceneConnector() {
+        this(true);
     }
 
     /***
      * maximum of configuration options
-     * @param node initial node to display
      * @param width of wrapping pane
      * @param height of wrapping pane
      * @param jumpable
      * @param workflow own workflow to work on
      */
-    public SceneConnector(Node node, double width, double height, boolean jumpable, SceneWorkflow workflow) {
-        child = new SceneWrapper(null, null, "initial");
+    public SceneConnector(double width, double height, boolean jumpable, SceneWorkflow workflow) {
         this.workflow = workflow;
-        if (node != null) {
-            setChild(node);
+        if ((setWrapped(this.workflow.getWorkflow().first())) == null){
+            wrapped = new SceneWrapper(null, null, "Initial");
         }
         Button next = createNext();
         Button previous = createPrevious();
@@ -73,7 +66,7 @@ public class SceneConnector {
         setPosition(previous, NON, PADDING, PADDING, NON);
         setPosition(listView, 10.0, 45.0, 10.0, NON);
         setSize(width, height);
-        listView.setItems(FXCollections.observableArrayList(workflow.getWorkflow()));
+        listView.setItems(workflow.getWorkflow());
         if (jumpable) {
             listView.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
@@ -106,10 +99,12 @@ public class SceneConnector {
      * @return the constructed wrapping pane to construct a scene for thr primary stage
      */
     public AnchorPane getAnchorPane() {
+        listView.refresh();
         return anchorPane;
     }
 
     public SceneWorkflow getWorkflow() {
+        listView.refresh();
         return workflow;
     }
 
@@ -117,8 +112,8 @@ public class SceneConnector {
      *
      * @return the currently displayed node
      */
-    public Node getChild() {
-        return child.getScene();
+    public Node getWrapped() {
+        return wrapped.getScene();
     }
 
     /***
@@ -126,7 +121,7 @@ public class SceneConnector {
      * @return the wrapping object of provided node that shall be wrapped
      */
     public SceneWrapper getScene(){
-        return child;
+        return wrapped;
     }
 
     /***
@@ -137,7 +132,7 @@ public class SceneConnector {
     public void next(ActionEvent event) {
         SceneWrapper next = workflow.getWorkflow().next();
         if (next != null) {
-            setChild(next.getScene());
+            setWrapped(next);
             System.out.println("Next");
         }
     }
@@ -150,7 +145,7 @@ public class SceneConnector {
     public void previous(ActionEvent event) {
         SceneWrapper previous = workflow.getWorkflow().previous();
         if (previous != null) {
-            setChild(previous.getScene());
+            setWrapped(previous);
             System.out.println("Previous");
         }
     }
@@ -162,7 +157,7 @@ public class SceneConnector {
     public void select(int index) {
         SceneWrapper now = workflow.getWorkflow().get(index);
         if (now != null) {
-            setChild(now.getScene());
+            setWrapped(now);
             System.out.println("Select");
         }
     }
@@ -204,22 +199,18 @@ public class SceneConnector {
         }
     }
 
-    private void configureTestWorkflow() {
-        for (int i = 0; i < 5; i++) {
-            Label label = new Label(i + ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-            workflow.addScene(new SceneWrapper(label, null, "Label " + i));
-        }
-    }
-
     /***
      * sets the node that should be wrapped and anchors it
-     * @param node
+     * @param wrapper
      */
-    private void setChild(Node node) {
-        anchorPane.getChildren().remove(child.getScene());
-        child.setScene(node);
-        anchorPane.getChildren().add(child.getScene());
-        setPosition(child.getScene(), 10.0, 45.0, 180.0, 10.0);
+    private SceneWrapper setWrapped(SceneWrapper wrapper) {
+        if (wrapped != null && wrapped.getScene() != null) {
+            anchorPane.getChildren().remove(wrapped.getScene());
+        }
+        wrapped = wrapper;
+        anchorPane.getChildren().add(wrapped.getScene());
+        setPosition(wrapped.getScene(), 10.0, 45.0, 180.0, 10.0);
+        return wrapped;
     }
 
 

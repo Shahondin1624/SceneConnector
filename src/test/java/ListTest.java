@@ -16,7 +16,7 @@ public class ListTest {
 
     @Test
     public void addAndGet() {
-        String res = list.getHere();
+        String res = list.getAtPos();
         Assertions.assertEquals("1", res);
     }
 
@@ -35,7 +35,7 @@ public class ListTest {
 
     @Test
     public void selectAndContinue() {
-        list.setPositionOn("2");
+        list.setPositionOnItem("2");
         String res = list.next();
         Assertions.assertEquals("3", res);
     }

@@ -2,10 +2,11 @@ plugins {
     id 'java'
     id 'java-library'
     id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'maven-publish'
 }
 
 group 'com.github.Shahondin1624'
-version '1.0.2'
+version '1.0.5'
 
 repositories {
     mavenCentral()
