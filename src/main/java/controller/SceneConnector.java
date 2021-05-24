@@ -21,6 +21,7 @@ public class SceneConnector {
     private final double NON = Double.NEGATIVE_INFINITY;
     private final double PADDING = 10.0;
     private ListView<SceneWrapper> listView = new ListView<>();
+    private Listener<SceneWrapper> listener = null;
 
     /***
      * pane which allows to select whether the side pane should allow jumps
@@ -55,7 +56,7 @@ public class SceneConnector {
      */
     public SceneConnector(double width, double height, boolean jumpable, SceneWorkflow workflow) {
         this.workflow = workflow;
-        if ((setWrapped(this.workflow.getWorkflow().first())) == null){
+        if ((setWrapped(this.workflow.getWorkflow().first())) == null) {
             wrapped = new SceneWrapper(null, null, "Initial");
         }
         Button next = createNext();
@@ -120,7 +121,7 @@ public class SceneConnector {
      *
      * @return the wrapping object of provided node that shall be wrapped
      */
-    public SceneWrapper getScene(){
+    public SceneWrapper getScene() {
         return wrapped;
     }
 
@@ -133,6 +134,9 @@ public class SceneConnector {
         SceneWrapper next = workflow.getWorkflow().next();
         if (next != null) {
             setWrapped(next);
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             System.out.println("Next");
         }
     }
@@ -146,6 +150,9 @@ public class SceneConnector {
         SceneWrapper previous = workflow.getWorkflow().previous();
         if (previous != null) {
             setWrapped(previous);
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             System.out.println("Previous");
         }
     }
@@ -158,6 +165,9 @@ public class SceneConnector {
         SceneWrapper now = workflow.getWorkflow().get(index);
         if (now != null) {
             setWrapped(now);
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             System.out.println("Select");
         }
     }
@@ -211,6 +221,14 @@ public class SceneConnector {
         anchorPane.getChildren().add(wrapped.getScene());
         setPosition(wrapped.getScene(), 10.0, 45.0, 180.0, 10.0);
         return wrapped;
+    }
+
+    public void setListener(Listener<SceneWrapper> listener) {
+        this.listener = listener;
+    }
+
+    public Listener<SceneWrapper> getListener() {
+        return listener;
     }
 
 
