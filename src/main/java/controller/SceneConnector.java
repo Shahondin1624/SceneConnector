@@ -21,6 +21,10 @@ public class SceneConnector {
     private final double NON = Double.NEGATIVE_INFINITY;
     private final double PADDING = 10.0;
     private ListView<SceneWrapper> listView = new ListView<>();
+    /**
+     * Listener that can be set to enable getting access to the wrapped scene before another node from the workflow is loaded
+     */
+    private Listener<SceneWrapper> listener = null;
 
     /***
      * pane which allows to select whether the side pane should allow jumps
@@ -55,7 +59,7 @@ public class SceneConnector {
      */
     public SceneConnector(double width, double height, boolean jumpable, SceneWorkflow workflow) {
         this.workflow = workflow;
-        if ((setWrapped(this.workflow.getWorkflow().first())) == null){
+        if ((setWrapped(this.workflow.getWorkflow().first())) == null) {
             wrapped = new SceneWrapper(null, null, "Initial");
         }
         Button next = createNext();
@@ -120,7 +124,7 @@ public class SceneConnector {
      *
      * @return the wrapping object of provided node that shall be wrapped
      */
-    public SceneWrapper getScene(){
+    public SceneWrapper getScene() {
         return wrapped;
     }
 
@@ -132,6 +136,9 @@ public class SceneConnector {
     public void next(ActionEvent event) {
         SceneWrapper next = workflow.getWorkflow().next();
         if (next != null) {
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             setWrapped(next);
             System.out.println("Next");
         }
@@ -145,6 +152,9 @@ public class SceneConnector {
     public void previous(ActionEvent event) {
         SceneWrapper previous = workflow.getWorkflow().previous();
         if (previous != null) {
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             setWrapped(previous);
             System.out.println("Previous");
         }
@@ -157,6 +167,9 @@ public class SceneConnector {
     public void select(int index) {
         SceneWrapper now = workflow.getWorkflow().get(index);
         if (now != null) {
+            if (listener != null) {
+                listener.notifyChange(wrapped);
+            }
             setWrapped(now);
             System.out.println("Select");
         }
@@ -211,6 +224,14 @@ public class SceneConnector {
         anchorPane.getChildren().add(wrapped.getScene());
         setPosition(wrapped.getScene(), 10.0, 45.0, 180.0, 10.0);
         return wrapped;
+    }
+
+    public void setListener(Listener<SceneWrapper> listener) {
+        this.listener = listener;
+    }
+
+    public Listener<SceneWrapper> getListener() {
+        return listener;
     }
 
 
